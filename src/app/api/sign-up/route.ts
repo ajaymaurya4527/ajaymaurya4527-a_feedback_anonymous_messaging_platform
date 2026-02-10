@@ -5,7 +5,7 @@ import { sendVerificationEmail } from "@/src/helper/sendVerificationEmail";
 import { success } from "zod";
 
 export async function POST(request: Request) {// always with this syntax
-    await dbConnect();//connect to this with database
+    await dbConnect();//connect to this with database every function of api calling
     try {
         const { username, email, password } = await request.json();//while creating a user account this field send by users
         const existingUserVerifiedByUsername = await UserModel.findOne({ username, isVerified: true })
