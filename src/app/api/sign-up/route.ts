@@ -2,7 +2,6 @@ import dbConnect from "@/src/lib/dbConnect";// always need to connect every rout
 import UserModel from "@/src/model/user.model";
 import bcrypt from "bcryptjs";
 import { sendVerificationEmail } from "@/src/helper/sendVerificationEmail";
-import { success } from "zod";
 
 export async function POST(request: Request) {// always with this syntax
     await dbConnect();//connect to this with database every function of api calling
@@ -64,10 +63,10 @@ export async function POST(request: Request) {// always with this syntax
             }, { status: 500 })
         }
         return Response.json({
-            success: false,
+            success: true,
             message: "User registered successfully .Please verify your email"
 
-        }, { status: 500 })
+        }, { status: 200 })
 
 
     } catch (error) {
