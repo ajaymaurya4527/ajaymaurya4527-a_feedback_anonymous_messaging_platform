@@ -1,11 +1,12 @@
 import mongoose,{Schema,Document} from "mongoose";
 
 export interface Message extends Document{
+    id(id: any): void;
     content:string,//smaller s in ts
     createdAt:Date
 }
 
-const messageSchema:Schema<Message>=new Schema({
+export const messageSchema:Schema<Message>=new Schema({
     content:{type:String,required:true},///bigger s in mongoose
     createdAt:{type:Date,required:true,default:Date.now}
     

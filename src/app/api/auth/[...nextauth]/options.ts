@@ -11,12 +11,12 @@ export const authOptions: NextAuthOptions = {
             id: "Credentials",
             name: "Credentials",
             credentials: {
-                email: { label: "Email", type: "text",placeholder:"Email" },
+                email: { label: "Email", type: "text", placeholder: "Email" },
                 password: { label: "Password", type: "password" }
             },
             async authorize(credentials: any): Promise<any> {
                 await dbConnect()
-                try { 
+                try {
                     const user = await UserModel.findOne({
                         $or: [{ email: credentials.identifer }, { username: credentials.identifer }]
                     })
@@ -62,7 +62,9 @@ export const authOptions: NextAuthOptions = {
         signIn: "/sign-in"//overwrite route
     },
     session: {
-        strategy: "jwt"
+        strategy: "jwt",
+        // How long (in seconds) until the session expires
+        maxAge: 36 * 60 * 60, // 36 hours
     },
     secret: process.env.AUTH_SECRET
 }

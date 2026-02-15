@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import AuthProvider from "../context/AuthProvider";
+import Navbar from "../components/navbar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,11 +22,16 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <AuthProvider>
-          {children}
+          {/* Navbar is placed here to show up on every page */}
+          <Navbar /> 
+          
+          <main>
+            {children}
+          </main>
         </AuthProvider>
       </body>
     </html>
-  )
+  );
 }
