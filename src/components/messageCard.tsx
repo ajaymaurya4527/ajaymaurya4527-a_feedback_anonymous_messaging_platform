@@ -26,7 +26,7 @@ export function MessageCard({ message, onMessageDelete }: MessageCardProps) {
 
     try {
       const response = await axios.delete<ApiResponse>(
-        `/api/delete-message/${message._id}`
+        `/api/delete-message/${message._id.toString()}`
       );
       
       // सफलता मिलने पर loading toast को success में बदलें

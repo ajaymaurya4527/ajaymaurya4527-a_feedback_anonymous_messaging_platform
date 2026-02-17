@@ -1,26 +1,31 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+// Use the new SDK import
+import { GoogleGenAI } from "@google/genai";
 import { NextResponse } from "next/server";
 
-// 1. Configuration - Keep these outside the handler to prevent re-initialization
 const apiKey = process.env.GEMINI_API_KEY as string;
-const genAI = new GoogleGenerativeAI(apiKey);
+const ai = new GoogleGenAI({ apiKey });
 
 export async function POST(request: Request) {
   try {
-    // 2. Define the prompt clearly
-    const prompt = 
-      "Create a list of three open-ended and engaging questions separated by '||'. " +
-      "Focus on universal, friendly themes for an anonymous platform.";
+    const prompt = "Create a list of three open-ended... (your prompt)";
 
-    const model = genAI.getGenerativeModel({ 
-      model: "gemini-1.5-flash",
+    const response = await ai.models.generateContent({
+      model: "gemini-2.0-flash", 
+      contents: [{ role: "user", parts: [{ text: prompt }] }],
     });
 
-    const result = await model.generateContent(prompt);
-    const text = result.response.text();
+    // --- THE FIX ---
+    // Instead of response.text(), access the content part directly:
+    const text = response.candidates?.[0]?.content?.parts?.[0]?.text || "";
+    
+    // Safety check: If Gemini didn't return text, throw an error
+    if (!text) {
+        throw new Error("AI returned an empty response");
+    }
 
-    // 3. Return a standard Response/NextResponse object
-    return NextResponse.json({ success: true, questions: text });
+    const cleanText = text.replace(/```/g, "").trim();
+
+    return NextResponse.json({ success: true, questions: cleanText });
 
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
