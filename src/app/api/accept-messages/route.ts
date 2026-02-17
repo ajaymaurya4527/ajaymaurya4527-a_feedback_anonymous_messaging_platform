@@ -55,7 +55,7 @@ export async function GET(request: Request) {//The GET function is responsible f
     await dbConnect();
 
     const session = await getServerSession(authOptions)
-    const user: User = session?.user
+    const user = session?.user
 
     if (!session || !session.user) {
         return Response.json({
@@ -64,20 +64,21 @@ export async function GET(request: Request) {//The GET function is responsible f
 
         }, { status: 401 })
     }
-    const userId = user._id;
+    
     try {
+        const userId = user._id || user.id;
         const foundUser = await UserModel.findById(userId)
         if (!foundUser) {
             return Response.json({
                 success: false,
-                message: "user not found"
+                message: "User not found in database"
 
-            }, { status: 401 })
+            }, { status: 404 })
 
         }
         return Response.json({
-            success: false,
-            isAcceptingMessages: foundUser.isAcceptingMessage
+            success: true,
+            isAcceptingMessage: foundUser.isAcceptingMessage
 
         }, { status: 200 })
     } catch (error) {

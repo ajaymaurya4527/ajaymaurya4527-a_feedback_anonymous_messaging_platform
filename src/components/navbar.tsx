@@ -1,87 +1,155 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Menu, X, Ghost, MessageSquare } from 'lucide-react'; // Optional: npm i lucide-react
-import { useSession } from 'next-auth/react';
-
+import { Menu, X, Shield, LogOut, User, Zap } from 'lucide-react';
+import { useSession, signOut } from 'next-auth/react';
+import { usePathname } from 'next/navigation';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { data: session, status } = useSession()
+  const [scrolled, setScrolled] = useState(false);
+  const { data: session } = useSession();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const username = session?.user?.username || session?.user?.name || "Ghost";
+  const publicProfileUrl = `/u/${username}`;
 
   const navLinks = [
-    { name: 'Home', href: '/' },
+    
     { name: 'Dashboard', href: '/dashboard' },
-    { name: 'Public Feed', href: '/feed' },
+    { name: 'Your Feed', href: publicProfileUrl },
   ];
 
-  if(session) return (
-    <nav className="bg-white border-b border-gray-200 fixed w-full z-50 top-0">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16 items-center">
+  if (session)return (
+    <nav 
+      className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 w-full ${
+        scrolled 
+          ? 'py-2' 
+          : 'py-0'
+      }`}
+    >
+      <div 
+        className={`w-full transition-all duration-300 border-b ${
+          scrolled 
+            ? 'bg-[#151921]/90 backdrop-blur-md border-slate-700/50 shadow-2xl' 
+            : 'bg-[#0B0E14] border-transparent'
+        }`}
+      >
+        {/* Content Container - Limits width of text/icons but background remains full width */}
+        <div className="max-w-[1400px] mx-auto flex justify-between h-16 items-center px-4 md:px-10">
           
           {/* Logo Section */}
-          <div className="flex-shrink-0 flex items-center">
-            <Link href="/" className="flex items-center gap-2">
-              <Ghost className="h-8 w-8 text-indigo-600" />
-              <span className="font-bold text-xl tracking-tight text-gray-900">
-                AnonMsg
+          <div className="flex-shrink-0">
+            <Link href="/" className="flex items-center gap-2 group">
+              <div className="relative">
+                <div className="absolute -inset-1 bg-indigo-500 rounded-lg blur opacity-20 group-hover:opacity-60 transition duration-300"></div>
+                <div className="relative p-1.5 bg-[#1b2029] border border-slate-700 rounded-lg">
+                  <Shield size={20} className="text-indigo-500" />
+                </div>
+              </div>
+              <span className="font-bold text-xl tracking-tight text-white">
+                Anon<span className="text-indigo-500">Ghost</span>
               </span>
             </Link>
           </div>
 
           {/* Desktop Menu */}
-          <div className="hidden md:flex items-center space-x-8">
-            {navLinks.map((link) => (
+          <div className="hidden md:flex items-center gap-2">
+            {navLinks.map((link) => {
+              const isActive = pathname === link.href;
+              return (
+                <Link 
+                  key={link.name} 
+                  href={link.href}
+                  className={`relative px-4 py-2 text-sm font-medium transition-all duration-200 rounded-lg hover:bg-slate-800/50 ${
+                    isActive ? 'text-white' : 'text-slate-400 hover:text-slate-200'
+                  }`}
+                >
+                  {link.name}
+                  {isActive && (
+                    <span className="absolute bottom-0 left-4 right-4 h-0.5 bg-indigo-500 rounded-full shadow-[0_0_10px_rgba(99,102,241,0.8)]" />
+                  )}
+                </Link>
+              );
+            })}
+            
+            <div className="h-6 w-[1px] bg-slate-800 mx-4" />
+
+            {session ? (
+              <div className="flex items-center gap-4">
+                <Link href="/dashboard" className="flex items-center gap-2 text-[11px] uppercase tracking-wider font-bold text-slate-300 bg-indigo-500/10 px-4 py-2 rounded-full border border-indigo-500/20 hover:bg-indigo-500/20 transition-all">
+                  <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+                  {username}
+                </Link>
+                <button 
+                  onClick={() => signOut({ callbackUrl: '/' })}
+                  className="p-2 text-slate-500 hover:text-red-400 transition-colors"
+                  title="Logout"
+                >
+                  <LogOut size={18} />
+                </button>
+              </div>
+            ) : (
               <Link 
-                key={link.name} 
-                href={link.href}
-                className="text-gray-600 hover:text-indigo-600 transition-colors font-medium"
+                href="/sign-in" 
+                className="bg-white text-black px-6 py-2 rounded-xl font-bold text-sm transition-all hover:bg-indigo-500 hover:text-white shadow-[0_0_15px_rgba(255,255,255,0.1)]"
               >
-                {link.name}
+                Sign In
               </Link>
-            ))}
-            <Link 
-              href="/get-started" 
-              className="bg-indigo-600 text-white px-5 py-2 rounded-full hover:bg-indigo-700 transition-all shadow-md"
-            >
-              Get Started
-            </Link>
+            )}
           </div>
 
-          {/* Mobile Button */}
-          <div className="md:hidden flex items-center">
+          {/* Mobile Toggle */}
+          <div className="md:hidden">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="text-gray-600 hover:text-gray-900 focus:outline-none"
+              className="p-2 text-slate-400 hover:text-white transition-colors"
             >
-              {isOpen ? <X size={28} /> : <Menu size={28} />}
+              {isOpen ? <X size={26} /> : <Menu size={26} />}
             </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu Panel - Also Full Width */}
       {isOpen && (
-        <div className="md:hidden bg-white border-t border-gray-100 animate-in slide-in-from-top duration-300">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+        <div className="md:hidden w-full border-b border-slate-800 bg-[#0B0E14]/98 backdrop-blur-xl animate-in slide-in-from-top-2 duration-300">
+          <div className="px-6 py-8 space-y-4">
             {navLinks.map((link) => (
               <Link
                 key={link.name}
                 href={link.href}
-                onClick={() => setIsOpen(false)}
-                className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50"
+                className={`flex items-center gap-4 text-lg font-semibold ${
+                  pathname === link.href ? 'text-indigo-500' : 'text-slate-300'
+                }`}
               >
                 {link.name}
               </Link>
             ))}
-            <Link
-              href="/get-started"
-              className="block w-full text-center bg-indigo-600 text-white px-3 py-2 rounded-md mt-4"
-            >
-              Get Started
-            </Link>
+            <div className="pt-6 border-t border-slate-800">
+              {session ? (
+                <button
+                  onClick={() => signOut()}
+                  className="flex items-center gap-3 text-red-500 font-bold"
+                >
+                  <LogOut size={20} /> Logout
+                </button>
+              ) : (
+                <Link
+                  href="/sign-in"
+                  className="block w-full text-center bg-indigo-600 text-white py-4 rounded-2xl font-bold"
+                >
+                  Sign In
+                </Link>
+              )}
+            </div>
           </div>
         </div>
       )}
