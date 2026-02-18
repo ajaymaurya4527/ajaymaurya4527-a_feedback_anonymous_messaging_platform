@@ -49,7 +49,9 @@ export async function POST(request: Request) {
                 verifyCodeExpiry: expiryDate,
                 isVerified: true, // User is verified by default now
                 isAcceptingMessage: true,
-                messages: []
+                messages: [],
+                collections: []//
+
             })
             
             await newUser.save()

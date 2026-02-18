@@ -17,6 +17,7 @@
     "ai": "^6.0.85",
     "axios": "^1.13.5",
     "bcryptjs": "^3.0.3",
+    "cloudinary": "^2.9.0",
     "dayjs": "^1.11.19",
     "lucide-react": "^0.563.0",
     "mongoose": "^9.1.5",
