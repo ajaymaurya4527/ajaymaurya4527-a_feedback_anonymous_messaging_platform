@@ -76,7 +76,8 @@ function SendMessage() {
         toast.success("Suggestions updated!");
       }
     } catch (error) {
-      toast.error("AI service is currently busy.");
+      const message = error instanceof Error ? error.message : String(error);
+      toast.error(message);
     } finally {
       setIsSuggesting(false);
     }
