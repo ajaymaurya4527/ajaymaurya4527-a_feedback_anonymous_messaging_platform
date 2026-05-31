@@ -61,7 +61,7 @@ const HomePage = () => {
           <Link href="/sign-up" className="w-full sm:w-auto px-8 py-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl font-bold text-lg transition-all shadow-xl shadow-indigo-600/20 flex items-center justify-center gap-2 group">
             Get your Link <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
           </Link>
-          <a href="https://github.com" className="w-full sm:w-auto px-8 py-4 bg-[#151921] hover:bg-[#1c222d] text-slate-300 rounded-2xl font-bold text-lg transition-all border border-slate-800 flex items-center justify-center gap-2">
+          <a href="https://github.com/ajaymaurya4527/ajaymaurya4527-a_feedback_anonymous_messaging_platform" className="w-full sm:w-auto px-8 py-4 bg-[#151921] hover:bg-[#1c222d] text-slate-300 rounded-2xl font-bold text-lg transition-all border border-slate-800 flex items-center justify-center gap-2">
             <Github size={20} /> View Source
           </a>
         </div>
